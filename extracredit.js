@@ -755,8 +755,7 @@ const checkBtn = document.getElementById("checkBtn");
   if (checkBtn) {
     checkBtn.addEventListener("click", function(e) {
       e.preventDefault();
-      // Run page validation but DO NOT submit — we only want to see errors in modal
-      const allGood = validateForm(); // reuse your validateForm() — returns boolean and shows inline errors
+      const allGood = validateForm();
   
   if (reviewBtn && form && reviewContent && reviewSection) {
     reviewBtn.addEventListener("click", function () {
@@ -863,13 +862,11 @@ const formData = new FormData(form);
     e.preventDefault();
     // final validation before real submit
     if (validateForm()) {
-      // You can either submit normally or redirect to thank-you page:
-      // form.submit(); // would run a normal submit if not prevented elsewhere
-      window.location.href = "thank-you.html"; // follow your existing behavior
+      window.location.href = "thank-you.html";
     } else {
-      // If something became invalid, keep modal open and disable submit
+     
       modalSubmit.disabled = true;
-      // Optionally update modal body with latest errors
+      
     }
   });
 
@@ -883,19 +880,19 @@ const formData = new FormData(form);
       const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
       if (!res.ok) return false;
       const data = await res.json();
-      // data.places is an array; we'll take the first place
+      
       const place = data.places && data.places[0];
       if (place) {
         cityInput.value = place["place name"];
-        // place["state abbreviation"] -> e.g. "TX"
+      
         const abbr = place["state abbreviation"];
-        // If your state field is a select, set it if option exists; else add it
+       
         if (stateSelect) {
           const opt = Array.from(stateSelect.options).find(o => o.value === abbr || o.text === abbr);
           if (opt) {
             stateSelect.value = opt.value;
           } else {
-            // add temporary option then set
+           
             const newOpt = document.createElement("option");
             newOpt.value = abbr;
             newOpt.textContent = place["state"];
@@ -903,7 +900,7 @@ const formData = new FormData(form);
             stateSelect.value = abbr;
           }
         }
-        // Lock city & state editing
+     
         cityInput.setAttribute("readonly", "true");
         stateSelect.setAttribute("disabled", "true");
         clearError("zip");
@@ -925,12 +922,11 @@ const formData = new FormData(form);
       cityInput.removeAttribute("readonly");
       stateSelect.removeAttribute("disabled");
     } else {
-      // Save into localStorage if your extracredit page uses that
-      // saveSingleFieldToStorage("zip"); etc.
+  
     }
   });
 
-  // If user edits ZIP after a successful lookup, unlock fields
+ 
   zipInput.addEventListener("input", function() {
     if (zipInput.value.length < 5) {
       cityInput.removeAttribute("readonly");
