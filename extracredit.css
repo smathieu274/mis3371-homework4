@@ -1,0 +1,146 @@
+/*
+ Program name: style.css
+ Author: Your Name
+ Date created: 09/22/2025
+ Date last edited: 11/13/2025
+ Version: 1.1
+ Description: External stylesheet for patient-form.html.
+ Styles headings, body, footer, links, and layout.
+*/
+
+#banner {
+    text-align: center;
+    padding: 20px;
+}
+
+#banner img {
+  display: block;
+  margin: 0 auto 10px auto;   /* centers the logo */
+  width: 600px;
+  height: 150px;
+}
+
+#banner h1 {
+  margin: 0;
+  font-size: 32px;
+  color: darkblue;
+}
+
+#banner p {
+  margin: 5px 0;
+  font-size: 18px;
+  font-style: italic;
+}
+
+#header {
+    text-align: center;
+    font-weight: bold;
+}
+
+body {
+    text-align: left;
+    background-color:#A08EA4;
+    font-family: Garamond, Serif;
+    color:#1A1414;
+    font-weight: bold;
+}
+
+h1 {
+    font-family: Garamond, Serif;
+    color:#000000;
+    font-weight: bold;
+}
+
+.section-title {
+    font-family: "Lucida Console", Serif;
+    color: #3D0A3D;
+    text-align: left;
+    margin-left: 40px;
+    font-weight: bold;
+}
+
+form#registration {
+    max-width: 900px;
+    margin: 0 auto 40px auto;   /* centers the box */
+    background-color: #f4f4f4;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 6px rgba(0,0,0,0.2);
+}
+
+/* Put labels & inputs on their own lines cleanly */
+form#registration label {
+    display: inline-block;
+    margin-top: 8px;
+}
+
+/* ---- ERROR MESSAGE STYLING ---- */
+.error {
+  color: red;
+  font-size: 0.9em;
+  margin-left: 10px;
+  min-height: 1em;          /* reserves space so layout doesn't jump */
+  display: inline-block;    /* keeps error next to input */
+}
+
+/* For hints like DOB range if you want to style it */
+.hint {
+  font-size: 0.8em;
+  color: #333;
+  margin-left: 10px;
+}
+
+/* Input fields that have JS validation errors */
+.error-input {
+  border: 2px solid red;
+  background-color: #ffecec;
+}
+
+/* ---- REVIEW SECTION ---- */
+#reviewSection {
+  max-width: 900px;
+  margin: 20px auto;
+  background-color: #fdfdfd;
+  padding: 15px 20px;
+  border-radius: 6px;
+}
+
+#reviewSection table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#reviewSection td {
+  border: 1px solid #ccc;
+  padding: 6px;
+}
+
+#reviewSection td:first-child {
+  font-weight: bold;
+  width: 35%;
+}
+
+/* Footer */
+#footer {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 2000; 
+  left: 0; top: 0; width: 100%; height: 100%; 
+  overflow: auto; 
+  background-color: rgba(0,0,0,0.5);
+}
+.modal-content {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 900px;
+}
+.close { float: right; font-size: 24px; cursor: pointer; }
+.btn { padding: 8px 14px; border-radius: 4px; cursor: pointer; }
+.btn[disabled] { opacity: 0.5; cursor: default; }
