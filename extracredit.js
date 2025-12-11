@@ -1,4 +1,4 @@
-console.log("script.js loaded");
+ console.log("script.js loaded");
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const validateBtn = document.getElementById("validateBtn");
   const submitBtn = document.getElementById("submitBtn");
   const resetBtn = document.getElementById("resetBtn");
-  const form = document.getElementById("registration");
   const previewModal = document.getElementById("previewModal");
   const modalBody = document.getElementById("modalBody");
   const modalSubmit = document.getElementById("modalSubmit");
@@ -159,7 +158,6 @@ document.addEventListener("DOMContentLoaded", function () {
       stateSelect.innerHTML = '<option value="">--Select State--</option>' + optionsHtml;
     } catch (err) {
       console.error("Error loading states:", err);
-      // Fallback so the field is still usable
       stateSelect.innerHTML = '<option value="">--Select State--</option>';
     }
   }
@@ -255,7 +253,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return true;
   }
 
-  const passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,30}$/;
+  const passwordPattern = /^(?=.*[A-Z])(?=.*[A-z])(?=.*\d).{8,30}$/;
 
   function validatePassword() {
     const id = "pwd";
@@ -493,7 +491,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function loadStoredDataIntoForm() {
     if (!shouldUseStorage()) return;
 
-    // text/select/textarea
     FIELDS_TO_STORE.forEach(id => {
       const el = document.getElementById(id);
       const stored = localStorage.getItem(STORAGE_PREFIX + id);
@@ -502,7 +499,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    // radio groups
     RADIO_GROUPS.forEach(name => {
       const stored = localStorage.getItem(STORAGE_PREFIX + "radio_" + name);
       if (!stored) return;
@@ -512,7 +508,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-    // checkbox conditions
     const storedConditions = localStorage.getItem(STORAGE_PREFIX + CONDITIONS_NAME);
     if (storedConditions) {
       try {
@@ -526,7 +521,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    // ensure slider label matches
     updateSliderPosition();
   }
 
@@ -538,400 +532,24 @@ document.addEventListener("DOMContentLoaded", function () {
       d.setTime(d.getTime() + (hours * 60 * 60 * 1000));
       expires = "; expires=" + d.toUTCString();
     }
-    document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";
+    document.cookie = name + "=" + value + expires + "; path=/";
   }
 
   function getCookie(name) {
-    const nameEQ = name + "=";
-    const ca = document.cookie.split(";");
-    for (let i = 0; i < ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) === " ") c = c.substring(1);
-      if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    const cname = name + "=";
+    const decoded = decodeURIComponent(document.cookie);
+    const parts = decoded.split(";");
+    for (let p of parts) {
+      while (p.charAt(0) === " ") p = p.substring(1);
+      if (p.indexOf(cname) === 0) {
+        return p.substring(cname.length, p.length);
+      }
     }
-    return null;
+    return "";
   }
 
   function eraseCookie(name) {
     document.cookie = name + "=; Max-Age=-99999999; path=/";
   }
 
-  function updateWelcomeFromCookie() {
-    const cookieFirstName = getCookie("firstName");
-
-    if (cookieFirstName) {
-      if (welcomeMessage) {
-        welcomeMessage.textContent = "Welcome back, " + cookieFirstName + "!";
-      }
-      if (notYouContainer) {
-        notYouContainer.style.display = "inline-block";
-      }
-      const firstNameInput = document.getElementById("first_name");
-      if (firstNameInput && !firstNameInput.value) {
-        firstNameInput.value = cookieFirstName;
-      }
-      // returning user: load stored data
-      loadStoredDataIntoForm();
-    } else {
-      if (welcomeMessage) {
-        welcomeMessage.textContent = "Welcome, new user.";
-      }
-      if (notYouContainer) {
-        notYouContainer.style.display = "none";
-      }
-    }
-  }
-
-  // ---------- VALIDATION + STORAGE EVENTS ----------
-  function addInputValidationAndStorage(id, validateFn) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener("input", () => {
-      validateFn();
-      saveSingleFieldToStorage(id);
-    });
-    el.addEventListener("blur", () => {
-      validateFn();
-      saveSingleFieldToStorage(id);
-    });
-  }
-
-  addInputValidationAndStorage("first_name", validateFirstName);
-  addInputValidationAndStorage("middle_initial", validateMiddleInitial);
-  addInputValidationAndStorage("last_name", validateLastName);
-  addInputValidationAndStorage("phone", validatePhone);
-  addInputValidationAndStorage("address1", validateAddress1);
-  addInputValidationAndStorage("address2", validateAddress2);
-  addInputValidationAndStorage("city", validateCity);
-  addInputValidationAndStorage("zip", validateZip);
-  addInputValidationAndStorage("email", validateEmail);
-  addInputValidationAndStorage("symptoms", validateSymptoms);
-
-  if (usernameInput) {
-    usernameInput.addEventListener("input", () => {
-      validateUsername();
-      validatePassword();
-      saveSingleFieldToStorage("username");
-    });
-    usernameInput.addEventListener("blur", () => {
-      validateUsername();
-      saveSingleFieldToStorage("username");
-    });
-  }
-
-  if (pwd) {
-    pwd.addEventListener("input", () => {
-      validatePassword();
-      checkPasswordMatch();
-    });
-    pwd.addEventListener("blur", () => {
-      validatePassword();
-      checkPasswordMatch();
-    });
-  }
-
-  if (confirmPwd) {
-    confirmPwd.addEventListener("input", checkPasswordMatch);
-    confirmPwd.addEventListener("blur", checkPasswordMatch);
-  }
-
-  if (ssn) {
-    ssn.addEventListener("input", validateSSN);
-    ssn.addEventListener("blur", validateSSN);
-  }
-
-  if (stateSelect) {
-    stateSelect.addEventListener("change", () => {
-      validateState();
-      saveSingleFieldToStorage("state");
-    });
-  }
-
-  RADIO_GROUPS.forEach(name => {
-    const radios = document.querySelectorAll(`input[name="${name}"]`);
-    radios.forEach(r => {
-      r.addEventListener("change", () => {
-        if (name === "gender") validateGender();
-        if (name === "contact") validateContact();
-        if (name === "medication") validateMedication();
-        saveRadioGroupToStorage(name);
-      });
-    });
-  });
-
-  const conditionCheckboxes = document.querySelectorAll(`input[name="${CONDITIONS_NAME}"]`);
-  conditionCheckboxes.forEach(cb => {
-    cb.addEventListener("change", saveConditionsToStorage);
-  });
-
-  // ---------- FORM-WIDE VALIDATION ----------
-  function validateForm() {
-    let isValid = true;
-
-    if (!validateFirstName()) isValid = false;
-    if (!validateMiddleInitial()) isValid = false;
-    if (!validateLastName()) isValid = false;
-    if (!validateDOB()) isValid = false;
-    if (!validatePhone()) isValid = false;
-    if (!validateUsername()) isValid = false;
-    if (!validatePassword()) isValid = false;
-    if (!checkPasswordMatch()) isValid = false;
-    if (!validateSSN()) isValid = false;
-    if (!validateAddress1()) isValid = false;
-    if (!validateAddress2()) isValid = false;
-    if (!validateCity()) isValid = false;
-    if (!validateState()) isValid = false;
-    if (!validateZip()) isValid = false;
-    if (!validateEmail()) isValid = false;
-    if (!validateGender()) isValid = false;
-    if (!validateContact()) isValid = false;
-    if (!validateMedication()) isValid = false;
-    if (!validateSymptoms()) isValid = false;
-    if (!validateSlider()) isValid = false;
-
-    if (isValid) {
-      if (submitBtn) submitBtn.style.display = "inline-block";
-
-      // REMEMBER ME: cookie + storage
-      if (shouldUseStorage()) {
-        const firstNameEl = document.getElementById("first_name");
-        if (firstNameEl && firstNameEl.value.trim() !== "") {
-          setCookie("firstName", firstNameEl.value.trim(), 48);
-        }
-        FIELDS_TO_STORE.forEach(id => saveSingleFieldToStorage(id));
-        RADIO_GROUPS.forEach(name => saveRadioGroupToStorage(name));
-        saveConditionsToStorage();
-      } else {
-        eraseCookie("firstName");
-        clearAllStoredData();
-      }
-
-      alert("Click Submit to finish.");
-    } else {
-      if (submitBtn) submitBtn.style.display = "none";
-      alert("Fix the errors in red.");
-    }
-
-    return isValid;
-  }
-
-  if (validateBtn) {
-    validateBtn.addEventListener("click", validateForm);
-  }
-
-  if (form) {
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-      if (validateForm()) {
-        // use your thank you page name
-        window.location.href = "thank-yous.html";
-      } else {
-        alert("Some fields still need attention.");
-      }
-    });
-  }
-
-  // ---------- RESET BUTTON ----------
-  if (resetBtn) {
-    resetBtn.addEventListener("click", function () {
-      const errorSpans = document.querySelectorAll(".error");
-      errorSpans.forEach(span => span.textContent = "");
-      const errorInputs = document.querySelectorAll(".error-input");
-      errorInputs.forEach(input => input.classList.remove("error-input"));
-      if (submitBtn) submitBtn.style.display = "none";
-
-      if (!shouldUseStorage()) {
-        clearAllStoredData();
-      }
-    });
-  }
-
-  // ---------- REVIEW BUTTON ----------
-  const reviewBtn = document.getElementById("reviewBtn");
-  const reviewSection = document.getElementById("reviewSection");
-  const reviewContent = document.getElementById("reviewContent");
-
-const checkBtn = document.getElementById("checkBtn");
-  if (checkBtn) {
-    checkBtn.addEventListener("click", function(e) {
-      e.preventDefault();
-      const allGood = validateForm();
-  
-  if (reviewBtn && form && reviewContent && reviewSection) {
-    reviewBtn.addEventListener("click", function () {
-      const formData = new FormData(form);
-
-      let output = `<h3>PLEASE REVIEW THIS INFORMATION</h3>`;
-      output += `<table style="border-collapse: collapse; width: 100%; margin-top: 10px;">`;
-
-      formData.forEach((value, key) => {
-        if (key.toLowerCase().includes("pwd") || key.toLowerCase().includes("ssn")) {
-          output += `
-            <tr>
-              <td style="border: 1px solid #ccc; padding: 6px; font-weight: bold;">${key}</td>
-              <td style="border: 1px solid #ccc; padding: 6px;">(hidden for security)</td>
-            </tr>
-          `;
-        } else if (value.trim() !== "") {
-          output += `
-            <tr>
-              <td style="border: 1px solid #ccc; padding: 6px; font-weight: bold;">${key}</td>
-              <td style="border: 1px solid #ccc; padding: 6px;">${value}</td>
-            </tr>
-          `;
-        }
-      });
-
-      output += `</table>`;
-
-      reviewContent.innerHTML = output;
-      reviewSection.style.display = "block";
-      reviewSection.scrollIntoView({ behavior: "smooth" });
-    });
-  }
-
-  // ---------- REMEMBER ME & NOT YOU ----------
-  if (rememberMeCheckbox) {
-    rememberMeCheckbox.addEventListener("change", function () {
-      if (!rememberMeCheckbox.checked) {
-        eraseCookie("firstName");
-        clearAllStoredData();
-      } else {
-        const firstNameEl = document.getElementById("first_name");
-        if (firstNameEl && firstNameEl.value.trim() !== "") {
-          setCookie("firstName", firstNameEl.value.trim(), 48);
-        }
-      }
-    });
-  }
-
-  if (notYouCheckbox) {
-    notYouCheckbox.addEventListener("change", function () {
-      if (notYouCheckbox.checked) {
-        eraseCookie("firstName");
-        clearAllStoredData();
-        if (form) form.reset();
-        if (submitBtn) submitBtn.style.display = "none";
-        if (welcomeMessage) welcomeMessage.textContent = "Welcome, new user.";
-        if (notYouContainer) notYouContainer.style.display = "none";
-        notYouCheckbox.checked = false;
-      }
-    });
-  }
-
-  // ---------- INITIAL COOKIE CHECK ----------
-  updateWelcomeFromCookie();
-const formData = new FormData(form);
-      let html = '<table style="width:100%; border-collapse:collapse;">';
-      formData.forEach((value, key) => {
-        let displayVal = value;
-        if (/pwd|password/i.test(key)) displayVal = "(password hidden)";
-        if (/ssn/i.test(key)) displayVal = value ? '***-**-****' : "";
-        if (key === "conditions") { /* if repeated field, join handled below */ }
-        html += `<tr><td style="padding:6px; border-bottom:1px solid #eee;"><strong>${key}</strong></td><td style="padding:6px; border-bottom:1px solid #eee;">${displayVal}</td></tr>`;
-      });
-      const conds = Array.from(document.querySelectorAll('input[name="conditions"]:checked')).map(cb => cb.value);
-      html += `<tr><td style="padding:6px;"><strong>conditions</strong></td><td style="padding:6px;">${conds.join(', ')}</td></tr>`;
-      html += "</table>";
-      modalBody.innerHTML = html;
-
-      // Enable submit button only if validateForm returned true
-      if (allGood) {
-        modalSubmit.disabled = false;
-      } else {
-        modalSubmit.disabled = true;
-      }
-
-      // Show modal
-      previewModal.style.display = "block";
-      previewModal.setAttribute("aria-hidden", "false");
-    });
-  }
-
-  // Modal buttons
-  modalBack.addEventListener("click", function(){ previewModal.style.display = "none"; previewModal.setAttribute("aria-hidden","true"); });
-  modalClose.addEventListener("click", () => modalBack.click());
-
-  // If user clicks outside the modal content, close and go back to form
-  window.addEventListener("click", function(event) {
-    if (event.target === previewModal) modalBack.click();
-  });
-
-  // Modal submit -> perform actual submit (but only if still valid)
-  modalSubmit.addEventListener("click", function(e) {
-    e.preventDefault();
-    // final validation before real submit
-    if (validateForm()) {
-      window.location.href = "thank-you.html";
-    } else {
-     
-      modalSubmit.disabled = true;
-      
-    }
-  });
-
-  const zipInput = document.getElementById("zip");
-  const cityInput = document.getElementById("city");
-  const stateSelect = document.getElementById("state");
-
-  async function lookupZip(zip) {
-    if (!/^\d{5}$/.test(zip)) return false;
-    try {
-      const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
-      if (!res.ok) return false;
-      const data = await res.json();
-      
-      const place = data.places && data.places[0];
-      if (place) {
-        cityInput.value = place["place name"];
-      
-        const abbr = place["state abbreviation"];
-       
-        if (stateSelect) {
-          const opt = Array.from(stateSelect.options).find(o => o.value === abbr || o.text === abbr);
-          if (opt) {
-            stateSelect.value = opt.value;
-          } else {
-           
-            const newOpt = document.createElement("option");
-            newOpt.value = abbr;
-            newOpt.textContent = place["state"];
-            stateSelect.appendChild(newOpt);
-            stateSelect.value = abbr;
-          }
-        }
-     
-        cityInput.setAttribute("readonly", "true");
-        stateSelect.setAttribute("disabled", "true");
-        clearError("zip");
-        return true;
-      }
-      return false;
-    } catch (err) {
-      console.error("Zip lookup error:", err);
-      return false;
-    }
-  }
-
-  zipInput.addEventListener("blur", async function() {
-    const zip = zipInput.value.trim();
-    if (!zip) return;
-    const ok = await lookupZip(zip);
-    if (!ok) {
-      showError("zip", "ZIP not found. Please enter city/state manually.");
-      cityInput.removeAttribute("readonly");
-      stateSelect.removeAttribute("disabled");
-    } else {
-  
-    }
-  });
-
- 
-  zipInput.addEventListener("input", function() {
-    if (zipInput.value.length < 5) {
-      cityInput.removeAttribute("readonly");
-      stateSelect.removeAttribute("disabled");
-    }
-  });
-});
 });
